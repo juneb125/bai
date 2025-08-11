@@ -65,10 +65,11 @@ where
 		regext::for_each(&PATH_TEMPLATE_VARIABLE, file_path.to_string(), each);
 
 	// Create parent directories as necessary
-	if let Some(parent) = Path::new(&file_path).parent()
-		&& !parent.exists()
-	{
-		fs::create_dir_all(parent)?;
+	match Path::new(&file_path).parent() {
+		Some(parent) if !parent.exists() => {
+			fs::create_dir_all(parent)?;
+		}
+		_ => (),
 	}
 	fs::write(file_path, file_content)?;
 
@@ -107,65 +108,69 @@ async fn main() -> anyhow::Result<()> {
 	if !context.contains_key("git.branch") {
 		let output =
 			Command::new("git").args(["config", "init.defaultBranch"]).output();
-		if let Ok(output) = output
-			&& output.status.success()
-		{
-			let stdout = String::from_utf8_lossy(&output.stdout).trim().to_string();
-			context.insert("git.branch".to_string(), stdout);
-		} else {
-			// The command might fail if a value hasn't been set, but we should just
-			// gracefully fall back to Git's default.
-			context.insert("git.branch".to_string(), "master".to_string());
+
+		match output {
+			Ok(o) if o.status.success() => {
+				let stdout = String::from_utf8_lossy(&o.stdout).trim().to_string();
+				context.insert("git.branch".to_string(), stdout);
+			}
+			Ok(_) | Err(_) => {
+				// The command might fail if a value hasn't been set, but we should just
+				// gracefully fall back to Git's default.
+				context.insert("git.branch".to_string(), "master".to_string());
+			}
 		}
 	};
 
 	if !context.contains_key("author.name") {
 		let output = Command::new("git").args(["config", "user.name"]).output();
 
-		if let Ok(output) = output
-			&& output.status.success()
-		{
-			// Ouch. Two allocations in one line.
-			let stdout = String::from_utf8_lossy(&output.stdout).trim().to_string();
-			context.insert("author.name".to_string(), stdout);
-		} else {
-			eprintln!(
-				"{} author.name is unset, but is used by many templates",
-				"warning:".yellow()
-			);
-			eprintln!(
-				"{} author.name can be set by running\n    bai -set \"author.name=James Baxter\"",
-				"fix:".green()
-			);
-			eprintln!(
-				"{} author.name can also be inferred from git\n    git config --global user.name \"James Baxter\"",
-				"fix:".green()
-			);
+		match output {
+			Ok(o) if o.status.success() => {
+				// Ouch. Two allocations in one line.
+				let stdout = String::from_utf8_lossy(&o.stdout).trim().to_string();
+				context.insert("author.name".to_string(), stdout);
+			}
+			Ok(_) | Err(_) => {
+				eprintln!(
+					"{} author.name is unset, but is used by many templates",
+					"warning:".yellow()
+				);
+				eprintln!(
+					"{} author.name can be set by running\n    bai -set \"author.name=James Baxter\"",
+					"fix:".green()
+				);
+				eprintln!(
+					"{} author.name can also be inferred from git\n    git config --global user.name \"James Baxter\"",
+					"fix:".green()
+				);
+			}
 		}
 	};
 
 	if !context.contains_key("author.email") {
 		let output = Command::new("git").args(["config", "user.email"]).output();
 
-		if let Ok(output) = output
-			&& output.status.success()
-		{
-			// Ouch. Two allocations in one line.
-			let stdout = String::from_utf8_lossy(&output.stdout).trim().to_string();
-			context.insert("author.email".to_string(), stdout);
-		} else {
-			eprintln!(
-				"{} author.email is unset, but is used by many templates",
-				"warning:".yellow()
-			);
-			eprintln!(
-				"{} author.email can be set by running\n    bai -set \"author.email=jamesbaxter@hey.com\"",
-				"fix:".green()
-			);
-			eprintln!(
-				"{} author.email can also be inferred from git\n    git config --global user.email \"jamesbaxter@hey.com\"",
-				"fix:".green()
-			);
+		match output {
+			Ok(o) if o.status.success() => {
+				// Ouch. Two allocations in one line.
+				let stdout = String::from_utf8_lossy(&o.stdout).trim().to_string();
+				context.insert("author.email".to_string(), stdout);
+			}
+			Ok(_) | Err(_) => {
+				eprintln!(
+					"{} author.email is unset, but is used by many templates",
+					"warning:".yellow()
+				);
+				eprintln!(
+					"{} author.email can be set by running\n    bai -set \"author.email=jamesbaxter@hey.com\"",
+					"fix:".green()
+				);
+				eprintln!(
+					"{} author.email can also be inferred from git\n    git config --global user.email \"jamesbaxter@hey.com\"",
+					"fix:".green()
+				);
+			}
 		}
 	};
 

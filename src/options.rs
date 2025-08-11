@@ -6,9 +6,9 @@ use std::collections::BTreeSet;
 use std::collections::HashMap;
 use std::process::exit;
 
-use crate::IDENT;
 use crate::config::Config;
 use crate::groups::expand_group;
+use crate::IDENT;
 
 static VARIABLE_NAME: Lazy<Regex> =
 	Lazy::new(|| Regex::new(&format!("^{}$", *IDENT)).unwrap());
