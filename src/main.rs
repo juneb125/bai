@@ -2,12 +2,15 @@ use chrono::Datelike;
 use colored::Colorize;
 use once_cell::sync::Lazy;
 use regex::Regex;
-use std::collections::HashMap;
-use std::env;
-use std::fs;
-use std::path::Path;
-use std::process::Command;
-use std::sync::Arc;
+#[rustfmt::skip]
+use std::{
+  collections::HashMap,
+  path::Path,
+  process::Command,
+  sync::Arc,
+};
+
+use std::{env, fs};
 use tokio::task;
 
 mod config;

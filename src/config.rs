@@ -1,13 +1,9 @@
 use etcetera::BaseStrategy;
-use serde::Deserialize;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::fs;
-use std::io;
-use std::io::IsTerminal;
-use std::io::Write;
-use std::path::Path;
-use std::path::PathBuf;
+use std::io::{self, IsTerminal, Write};
+use std::path::{Path, PathBuf};
 
 #[derive(Clone, Debug, Default, Deserialize, Serialize)]
 pub struct Config {

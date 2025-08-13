@@ -1,5 +1,4 @@
-use regex::Captures;
-use regex::Regex;
+use regex::{Captures, Regex};
 
 pub fn for_each<T, F>(regex: &Regex, text: String, each: F) -> String
 where

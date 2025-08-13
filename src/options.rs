@@ -2,8 +2,7 @@ use anyhow::anyhow;
 use colored::Colorize;
 use once_cell::sync::Lazy;
 use regex::Regex;
-use std::collections::BTreeSet;
-use std::collections::HashMap;
+use std::collections::{BTreeSet, HashMap};
 use std::process::exit;
 
 use crate::config::Config;
