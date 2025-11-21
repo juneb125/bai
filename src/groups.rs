@@ -18,7 +18,6 @@ pub fn expand_group<S: AsRef<str>>(
 			"test/$$name$$_test.gleam",
 			"test/$$name$$/example_test.gleam",
 		])),
-		"/go" => Ok(with_common_files(&["go.mod", "main.go", "staticcheck.conf"])),
 		"/rs" | "/rust" => Ok(with_common_files(&[
 			".cargo/config.toml",
 			".rustfmt.toml",
@@ -60,7 +59,7 @@ fn group_files_exist() {
 	use crate::parse_file_name;
 	use std::fs;
 
-	let groups = ["/oss", "/gleam", "/go", "/rs", "/ts", "/tsx"];
+	let groups = ["/oss", "/gleam", "/rs", "/ts", "/tsx"];
 	for group in groups {
 		let group = expand_group(group).unwrap();
 		let files = group.iter().map(|it| {
